@@ -1,0 +1,13 @@
+﻿@{ ViewData["Title"] = "Login"; }
+<section class="py-5 mt-5">
+    <div class="container" style="max-width:400px">
+        <h2 class="mb-4">Área administrativa</h2>
+        @if (ViewBag.Erro is not null) { <div class="alert alert-danger">@ViewBag.Erro</div> }
+        <form method="post">
+            <input name="usuario" class="form-control mb-3" placeholder="Usuário" required />
+            <input name="senha" type="password" class="form-control mb-3" placeholder="Senha" required />
+            <button class="btn btn-primary w-100">Entrar</button>
+        </form>
+    </div>
+</section>
+

@@ -1,0 +1,93 @@
+﻿@model MeuPortfolio.Models.Perfil
+@{
+    ViewData["Title"] = "Home";
+    var projetos = (IEnumerable<MeuPortfolio.Models.Projeto>)ViewBag.Projetos;
+}
+
+<!-- HERO / SOBRE -->
+<section id="sobre" class="hero d-flex align-items-center">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-md-4 text-center">
+                <img src="@Model.FotoUrl" alt="@Model.Nome" class="foto-perfil img-fluid rounded-circle shadow-lg" />
+            </div>
+            <div class="col-md-8">
+                <p class="text-primary fw-semibold mb-1">Olá, eu sou</p>
+                <h1 class="display-4 fw-bold">@Model.Nome</h1>
+                <h2 class="h4 text-secondary mb-3">@Model.Cargo</h2>
+                <p class="lead">@Model.Resumo</p>
+                <ul class="list-unstyled text-secondary small mb-4">
+                    <li><i class="bi bi-geo-alt me-2"></i>@Model.Localizacao</li>
+                    <li><i class="bi bi-envelope me-2"></i>@Model.Email</li>
+                    <li><i class="bi bi-telephone me-2"></i>@Model.Telefone</li>
+                </ul>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="#projetos" class="btn btn-primary"><i class="bi bi-grid me-1"></i> Ver projetos</a>
+                    <a href="@Model.CurriculoUrl" target="_blank" class="btn btn-outline-light"><i class="bi bi-download me-1"></i> Currículo</a>
+                    @foreach (var rede in Model.RedesSociais)
+                    {
+                        <a href="@rede.Url" target="_blank" rel="noopener" class="btn btn-outline-secondary" title="@rede.Nome">
+                            <i class="@rede.Icone"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HABILIDADES -->
+<section id="habilidades" class="py-5">
+    <div class="container">
+        <h2 class="section-title">Habilidades</h2>
+        <div class="row g-4">
+            @foreach (var h in Model.Habilidades)
+            {
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card skill-card h-100 text-center p-3">
+                        <i class="@h.Icone fs-1 mb-2"></i>
+                        <h6 class="mb-2">@h.Nome</h6>
+                        <div class="progress" role="progressbar" style="height: 6px">
+                            <div class="progress-bar" style="width: @h.Nivel%"></div>
+                        </div>
+                        <small class="text-secondary mt-1">@h.Nivel%</small>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- PROJETOS -->
+<section id="projetos" class="py-5 bg-body-tertiary">
+    <div class="container">
+        <h2 class="section-title">Projetos</h2>
+        <div class="row g-4">
+            @foreach (var p in (List<MeuPortfolio.Models.Projeto>)ViewBag.Projetos)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card project-card h-100 shadow-sm">
+                        <img src="@p.CapaUrl" class="card-img-top" alt="@p.Titulo" />
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@p.Titulo</h5>
+                            <p class="card-text text-secondary flex-grow-1">@p.ResumoCurto</p>
+                            <div class="mb-3">
+                                @foreach (var t in p.Tecnologias)
+                                {
+                                    <span class="badge text-bg-dark border me-1">@t</span>
+                                }
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a asp-action="Projeto" asp-route-slug="@p.Slug" class="btn btn-primary btn-sm flex-grow-1">Ver detalhes</a>
+                                @if (p.RepositorioUrl is not null)
+                                {
+                                    <a href="@p.RepositorioUrl" target="_blank" class="btn btn-outline-light btn-sm"><i class="bi bi-github"></i></a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

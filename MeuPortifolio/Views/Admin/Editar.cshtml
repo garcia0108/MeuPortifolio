@@ -1,0 +1,103 @@
+﻿@model MeuPortfolio.Models.Projeto
+
+@{ ViewData["Title"] = Model.Id == 0 ? "Novo projeto" : "Editar projeto"; }
+
+<section class="py-5 mt-5">
+    <div class="container">
+        <a asp-action="Index" class="d-inline-block mb-3"><i class="bi bi-arrow-left"></i> Voltar</a>
+        <h2 class="mb-4">@ViewData["Title"]</h2>
+
+        <div class="row g-5">
+            <!-- DADOS DO PROJETO -->
+            <div class="col-lg-6">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="mb-3"><label class="form-label">Título</label>
+                        <input asp-for="Titulo" class="form-control" required /></div>
+                    <div class="mb-3"><label class="form-label">Slug (URL)</label>
+                        <input asp-for="Slug" class="form-control" placeholder="meu-projeto" required /></div>
+                    <div class="mb-3"><label class="form-label">Resumo curto (card)</label>
+                        <input asp-for="ResumoCurto" class="form-control" /></div>
+                    <div class="mb-3"><label class="form-label">Descrição completa</label>
+                        <textarea asp-for="DescricaoCompleta" class="form-control" rows="6"></textarea></div>
+                    <div class="mb-3"><label class="form-label">Tecnologias (separadas por vírgula)</label>
+                        <input asp-for="TecnologiasTexto" class="form-control" placeholder="C#, ASP.NET Core, SQL Server" /></div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3"><label class="form-label">Link do GitHub</label>
+                            <input asp-for="RepositorioUrl" class="form-control" /></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Link da demo</label>
+                            <input asp-for="DemoUrl" class="form-control" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3"><label class="form-label">Ordem</label>
+                            <input asp-for="Ordem" type="number" class="form-control" /></div>
+                        <div class="col-md-8 mb-3"><label class="form-label">Imagem de capa</label>
+                            <input name="capa" type="file" accept="image/*" class="form-control" />
+                            @if (!string.IsNullOrEmpty(Model.CapaUrl))
+                            { <img src="@Model.CapaUrl" class="mt-2 rounded" style="max-height:120px" /> }
+                        </div>
+                    </div>
+                    <button class="btn btn-primary"><i class="bi bi-save me-1"></i> Salvar</button>
+                </form>
+            </div>
+
+            <!-- MÍDIAS -->
+            <div class="col-lg-6">
+                @if (Model.Id == 0)
+                {
+                    <div class="alert alert-secondary">Salve o projeto primeiro para adicionar fotos e vídeos.</div>
+                }
+                else
+                {
+                    <h4>Adicionar foto / vídeo</h4>
+                    <form asp-action="AdicionarMidia" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" class="card p-3 mb-4">
+                        <div class="mb-2"><label class="form-label">Tipo</label>
+                            <select name="tipo" class="form-select" id="tipoMidia">
+                                <option value="Imagem">Imagem</option>
+                                <option value="Video">Vídeo (arquivo .mp4)</option>
+                                <option value="YouTube">YouTube</option>
+                            </select></div>
+                        <div class="mb-2" id="campoArquivo"><label class="form-label">Arquivo</label>
+                            <input name="arquivo" type="file" class="form-control" /></div>
+                        <div class="mb-2 d-none" id="campoYoutube"><label class="form-label">Link do YouTube</label>
+                            <input name="urlYoutube" class="form-control" placeholder="https://www.youtube.com/watch?v=..." /></div>
+                        <div class="mb-3"><label class="form-label">Legenda</label>
+                            <input name="legenda" class="form-control" /></div>
+                        <button class="btn btn-outline-light"><i class="bi bi-upload me-1"></i> Adicionar</button>
+                    </form>
+
+                    <h4>Galeria (@Model.Midias.Count)</h4>
+                    <div class="row g-3">
+                    @foreach (var m in Model.Midias)
+                    {
+                        <div class="col-6">
+                            <div class="card p-2 h-100">
+                                @if (m.Tipo == MeuPortfolio.Models.TipoMidia.Imagem)
+                                { <img src="@m.Url" class="rounded" style="height:120px;object-fit:cover" /> }
+                                else if (m.Tipo == MeuPortfolio.Models.TipoMidia.Video)
+                                { <video src="@m.Url" class="rounded" style="height:120px" controls></video> }
+                                else
+                                { <div class="ratio ratio-16x9"><iframe src="@m.Url"></iframe></div> }
+                                <small class="text-secondary mt-2">@m.Legenda</small>
+                                <form asp-action="ExcluirMidia" asp-route-id="@m.Id" method="post" class="mt-2">
+                                    <button class="btn btn-sm btn-outline-danger w-100">Remover</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+    const sel = document.getElementById('tipoMidia');
+    if (sel) sel.addEventListener('change', () => {
+        const yt = sel.value === 'YouTube';
+        document.getElementById('campoYoutube').classList.toggle('d-none', !yt);
+        document.getElementById('campoArquivo').classList.toggle('d-none', yt);
+    });
+</script>
+}
